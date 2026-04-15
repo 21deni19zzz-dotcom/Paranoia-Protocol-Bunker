@@ -1,0 +1,80 @@
+[gd_scene load_steps=8 format=3 uid="uid://bpbunkercorr01"]
+
+[ext_resource type="PackedScene" uid="uid://bia32vkq1a5i" path="res://scenes/player/player.tscn" id="1_player"]
+[ext_resource type="Environment" uid="uid://dr0jllowrdeg1" path="res://resources/environment.tres" id="2_env"]
+[ext_resource type="PackedScene" uid="uid://dgqg1bjfa5smg" path="res://scenes/pieces/interactable_door.tscn" id="3_door"]
+[ext_resource type="PackedScene" uid="uid://crmffc87i8wof" path="res://scenes/pieces/lockable_interactable_door.tscn" id="4_lockdoor"]
+[ext_resource type="Script" path="res://scenes/props/dark_zone.gd" id="5_dark"]
+
+[sub_resource type="StandardMaterial3D" id="Mat_concrete"]
+albedo_color = Color(0.3, 0.28, 0.26, 1)
+roughness = 0.95
+
+[sub_resource type="BoxShape3D" id="Shape_dark"]
+size = Vector3(2.5, 2.8, 6)
+
+[node name="BunkerCorridor" type="Node3D"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = ExtResource("2_env")
+
+[node name="PlayerSpawn" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 4.5)
+
+[node name="Player" parent="." instance=ExtResource("1_player")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 4.5)
+
+[node name="Geometry" type="Node3D" parent="."]
+
+[node name="Floor" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+size = Vector3(2.5, 0.2, 10)
+material = SubResource("Mat_concrete")
+
+[node name="Ceiling" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.8, 0)
+size = Vector3(2.5, 0.2, 10)
+material = SubResource("Mat_concrete")
+
+[node name="WallEast" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.25, 1.4, 0)
+size = Vector3(0.2, 2.8, 10)
+material = SubResource("Mat_concrete")
+
+[node name="WallWest" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.25, 1.4, 0)
+size = Vector3(0.2, 2.8, 10)
+material = SubResource("Mat_concrete")
+
+[node name="WallNorth" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, -5)
+size = Vector3(2.5, 2.8, 0.2)
+material = SubResource("Mat_concrete")
+
+[node name="WallSouth" type="CSGBox3D" parent="Geometry"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, 5)
+size = Vector3(2.5, 2.8, 0.2)
+material = SubResource("Mat_concrete")
+
+[node name="EntryDoor" parent="." instance=ExtResource("3_door")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0, 4.9)
+
+[node name="SideLockedDoor" parent="." instance=ExtResource("4_lockdoor")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 1.2, 0.0, 0.0)
+
+[node name="ExitDoor" parent="." instance=ExtResource("3_door")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0.0, -4.9)
+
+[node name="WorkingLamp" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 3.5)
+light_color = Color(1, 0.87, 0.6, 1)
+light_energy = 2.0
+omni_range = 4.0
+
+[node name="DarkZone" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, -1.5)
+script = ExtResource("5_dark")
+extra_growth_per_sec = 5.0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="DarkZone"]
+shape = SubResource("Shape_dark")
