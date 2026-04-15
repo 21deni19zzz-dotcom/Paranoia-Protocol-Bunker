@@ -32,7 +32,9 @@ func change_level(level_path: String) -> void:
 
 func get_play_time() -> String:
 	var total_seconds: int = int(game_time)
+	@warning_ignore("integer_division")
 	var hours: int = total_seconds / 3600
+	@warning_ignore("integer_division")
 	var minutes: int = (total_seconds % 3600) / 60
 	var seconds: int = total_seconds % 60
 	return "%02d:%02d:%02d" % [hours, minutes, seconds]

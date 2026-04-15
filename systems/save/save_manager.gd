@@ -32,8 +32,8 @@ func save_game(slot: int = 0) -> bool:
 		rot = player.global_rotation
 
 	var flashlight_battery: float = 100.0
-	var fl: Node = get_tree().get_first_node_in_group(&"flashlight")
-	if fl and "battery" in fl:
+	var fl: FlashlightSystem = get_tree().get_first_node_in_group(&"flashlight") as FlashlightSystem
+	if fl:
 		flashlight_battery = fl.battery
 
 	var data: Dictionary = {
