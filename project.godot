@@ -37,6 +37,7 @@ co="*uid://bjkb7sfgdaofj"
 ImpactMgr="*uid://dsun3ccikxe7v"
 SceneRenderManager="*uid://mbume3uiijsw"
 EventBus="*res://systems/events/event_bus.gd"
+GameManager="*res://systems/events/game_manager.gd"
 
 [debug]
 
