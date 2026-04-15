@@ -40,6 +40,7 @@ EventBus="*res://systems/events/event_bus.gd"
 GameManager="*res://systems/events/game_manager.gd"
 ParanoiaManager="*res://systems/paranoia/paranoia_manager.gd"
 InventoryManager="*res://systems/inventory/inventory_manager.gd"
+SaveManager="*res://systems/save/save_manager.gd"
 
 [debug]
 
