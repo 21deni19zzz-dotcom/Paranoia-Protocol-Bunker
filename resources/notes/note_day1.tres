@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="NoteResource" load_steps=2 format=3 uid="uid://bnoteday001"]
+
+[ext_resource type="Script" path="res://systems/inventory/note_resource.gd" id="1_note"]
+
+[resource]
+script = ExtResource("1_note")
+note_id = "day_1_entrance"
+title = "День 1"
+content = "День 1. Дверь захлопнулась. Снаружи что-то происходит.
+Нашёл фонарик, но батарейки почти сели.
+Нужно найти выход. Не доверяй теням."
+is_read = false
