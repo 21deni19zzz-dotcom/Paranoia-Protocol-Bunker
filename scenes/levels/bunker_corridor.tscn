@@ -1,4 +1,4 @@
-[gd_scene load_steps=20 format=3 uid="uid://bbunker02"]
+[gd_scene load_steps=24 format=3 uid="uid://bbunker02"]
 
 [ext_resource type="Material" uid="uid://cmatconwall01" path="res://assets/materials/concrete_wall.tres" id="1_wall"]
 [ext_resource type="Material" uid="uid://cmatconfloor01" path="res://assets/materials/concrete_floor.tres" id="2_floor"]
@@ -10,6 +10,8 @@
 [ext_resource type="Script" path="res://scenes/props/door_scene_loader.gd" id="8_loader"]
 [ext_resource type="Script" path="res://scenes/props/flickering_lamp.gd" id="9_lamp"]
 [ext_resource type="Resource" uid="uid://bitembatt01" path="res://assets/items/battery.tres" id="10_battres"]
+[ext_resource type="Script" path="res://scenes/props/note_pickup.gd" id="14_note"]
+[ext_resource type="Resource" uid="uid://bnoteday003" path="res://assets/items/notes/day3.tres" id="15_noteres"]
 [ext_resource type="PackedScene" uid="uid://bp8gamehud001" path="res://scenes/ui/game_hud.tscn" id="11_hud"]
 [ext_resource type="PackedScene" uid="uid://bpinvui001" path="res://scenes/ui/inventory_ui.tscn" id="12_invui"]
 [ext_resource type="PackedScene" uid="uid://bpnoteview001" path="res://scenes/ui/note_viewer_ui.tscn" id="13_noteui"]
@@ -31,6 +33,16 @@ size = Vector3(0.1, 0.05, 0.03)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_batt"]
 size = Vector3(0.1, 0.05, 0.03)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_note"]
+size = Vector3(0.3, 0.05, 0.2)
+
+[sub_resource type="BoxMesh" id="BoxMesh_note"]
+size = Vector3(0.3, 0.02, 0.2)
+
+[sub_resource type="StandardMaterial3D" id="Mat_paper"]
+albedo_color = Color(0.85, 0.82, 0.68, 1)
+roughness = 0.9
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_dark"]
 size = Vector3(2.5, 2.8, 6)
@@ -183,6 +195,19 @@ transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 1.8, -4.85)
 pixel_size = 0.004
 text = "ОНИ СЛЫШАТ"
 label_settings = SubResource("LS_blood")
+
+[node name="NotePickup" type="Area3D" parent="SegmentA" groups=["interactable"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.9, 0.15, -4.5)
+script = ExtResource("14_note")
+note = ExtResource("15_noteres")
+paranoia_on_read = 10.0
+
+[node name="NoteCollision" type="CollisionShape3D" parent="SegmentA/NotePickup"]
+shape = SubResource("BoxShape3D_note")
+
+[node name="NoteMesh" type="MeshInstance3D" parent="SegmentA/NotePickup"]
+mesh = SubResource("BoxMesh_note")
+surface_material_override/0 = SubResource("Mat_paper")
 
 [node name="BatteryPickup" type="Area3D" parent="SegmentA" groups=["interactable"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0.15, -1.5)
