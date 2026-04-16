@@ -1,16 +1,20 @@
-[gd_scene load_steps=21 format=3 uid="uid://bbunker01"]
+[gd_scene load_steps=35 format=3 uid="uid://bbunker01"]
 
 [ext_resource type="Material" uid="uid://cmatconwall01" path="res://assets/materials/concrete_wall.tres" id="1_wall"]
-[ext_resource type="Script" path="res://scenes/props/door_scene_loader.gd" id="11_loader"]
 [ext_resource type="Material" uid="uid://cmatconfloor01" path="res://assets/materials/concrete_floor.tres" id="2_floor"]
 [ext_resource type="Material" uid="uid://cmatrust01" path="res://assets/materials/rusty_metal.tres" id="3_rust"]
 [ext_resource type="Material" uid="uid://cmatdoor01" path="res://assets/materials/door_metal.tres" id="4_door"]
 [ext_resource type="PackedScene" uid="uid://bia32vkq1a5i" path="res://scenes/player/player.tscn" id="5_player"]
 [ext_resource type="PackedScene" uid="uid://b8eom7lmmvqxh" path="res://scenes/pieces/drawer.tscn" id="6_drawer"]
 [ext_resource type="PackedScene" uid="uid://bimo0ijo3l1di" path="res://addons/game_pieces/interactable_door/interactable_door.tscn" id="7_door"]
-[ext_resource type="Script" path="res://scenes/props/flickering_lamp.gd" id="8_lamp"]
-[ext_resource type="Script" path="res://scenes/props/note_pickup.gd" id="9_note"]
-[ext_resource type="Resource" uid="uid://bnoteday001" path="res://resources/notes/note_day1.tres" id="10_noteres"]
+[ext_resource type="PackedScene" uid="uid://crmffc87i8wof" path="res://scenes/pieces/lockable_interactable_door.tscn" id="8_lockdoor"]
+[ext_resource type="Script" path="res://scenes/props/flickering_lamp.gd" id="9_lamp"]
+[ext_resource type="Script" path="res://scenes/props/note_pickup.gd" id="10_note"]
+[ext_resource type="Script" path="res://scenes/props/door_scene_loader.gd" id="11_loader"]
+[ext_resource type="Resource" uid="uid://bnoteday001" path="res://resources/notes/note_day1.tres" id="12_noteres"]
+[ext_resource type="PackedScene" uid="uid://bp8gamehud001" path="res://scenes/ui/game_hud.tscn" id="13_hud"]
+[ext_resource type="PackedScene" uid="uid://bpinvui001" path="res://scenes/ui/inventory_ui.tscn" id="14_invui"]
+[ext_resource type="PackedScene" uid="uid://bpnoteview001" path="res://scenes/ui/note_viewer_ui.tscn" id="15_noteui"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_floor"]
 size = Vector3(6, 0.2, 4)
@@ -24,15 +28,27 @@ size = Vector3(1.2, 0.8, 0.6)
 [sub_resource type="BoxShape3D" id="BoxShape3D_table"]
 size = Vector3(1.2, 0.8, 0.6)
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_note"]
-size = Vector3(0.3, 0.05, 0.2)
-
 [sub_resource type="BoxMesh" id="BoxMesh_note"]
 size = Vector3(0.3, 0.02, 0.2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_note"]
+size = Vector3(0.3, 0.05, 0.2)
 
 [sub_resource type="StandardMaterial3D" id="Mat_paper"]
 albedo_color = Color(0.85, 0.82, 0.68, 1)
 roughness = 0.9
+
+[sub_resource type="StandardMaterial3D" id="Mat_water"]
+albedo_color = Color(0.15, 0.25, 0.35, 0.55)
+metallic = 0.2
+roughness = 0.1
+transparency = 1
+
+[sub_resource type="StandardMaterial3D" id="Mat_screen"]
+albedo_color = Color(0.3, 0.05, 0.05, 1)
+emission_enabled = true
+emission = Color(0.6, 0.1, 0.1, 1)
+emission_energy_multiplier = 1.5
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_trigger"]
 size = Vector3(2, 2.5, 0.5)
@@ -48,10 +64,50 @@ glow_enabled = true
 glow_intensity = 0.4
 fog_enabled = true
 fog_light_color = Color(0.08, 0.08, 0.10, 1)
-fog_density = 0.05
+fog_density = 0.04
 adjustment_enabled = true
 adjustment_contrast = 1.1
-adjustment_saturation = 0.9
+adjustment_saturation = 0.85
+
+[sub_resource type="ParticleProcessMaterial" id="PPM_drip"]
+direction = Vector3(0, -1, 0)
+spread = 2.0
+initial_velocity_min = 0.2
+initial_velocity_max = 0.4
+gravity = Vector3(0, -3, 0)
+scale_min = 0.02
+scale_max = 0.04
+
+[sub_resource type="SphereMesh" id="SphereMesh_drip"]
+radius = 0.03
+height = 0.06
+
+[sub_resource type="ParticleProcessMaterial" id="PPM_steam"]
+direction = Vector3(0, 1, 0)
+spread = 15.0
+initial_velocity_min = 0.3
+initial_velocity_max = 0.8
+gravity = Vector3(0, 0.4, 0)
+scale_min = 0.1
+scale_max = 0.3
+color = Color(0.9, 0.9, 0.95, 0.35)
+
+[sub_resource type="SphereMesh" id="SphereMesh_steam"]
+radius = 0.15
+height = 0.3
+
+[sub_resource type="ParticleProcessMaterial" id="PPM_dust"]
+spread = 180.0
+initial_velocity_min = 0.02
+initial_velocity_max = 0.05
+gravity = Vector3(0, -0.05, 0)
+scale_min = 0.005
+scale_max = 0.015
+color = Color(0.9, 0.9, 0.85, 0.3)
+
+[sub_resource type="SphereMesh" id="SphereMesh_dust"]
+radius = 0.01
+height = 0.02
 
 [node name="BunkerEntrance" type="Node3D"]
 
@@ -101,15 +157,10 @@ size = Vector3(0.2, 3, 4)
 use_collision = true
 material = ExtResource("1_wall")
 
-[node name="FlickerLamp" type="OmniLight3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.7, 0)
-light_color = Color(1, 0.85, 0.6, 1)
-light_energy = 2.0
-omni_range = 6.0
-script = ExtResource("8_lamp")
-on_time = 2.0
-flicker_time = 0.5
-off_time = 1.0
+[node name="VentGrille" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 2.95, 1.2)
+size = Vector3(0.8, 0.05, 0.8)
+material = ExtResource("3_rust")
 
 [node name="Table" type="StaticBody3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 0.4, 0)
@@ -123,8 +174,8 @@ shape = SubResource("BoxShape3D_table")
 
 [node name="NotePickup" type="Area3D" parent="Table" groups=["interactable"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.45, 0)
-script = ExtResource("9_note")
-note = ExtResource("10_noteres")
+script = ExtResource("10_note")
+note = ExtResource("12_noteres")
 paranoia_on_read = 10.0
 
 [node name="NoteCollision" type="CollisionShape3D" parent="Table/NotePickup"]
@@ -134,25 +185,153 @@ shape = SubResource("BoxShape3D_note")
 mesh = SubResource("BoxMesh_note")
 surface_material_override/0 = SubResource("Mat_paper")
 
+[node name="Radio" type="CSGBox3D" parent="Table"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.4, 0.5, 0)
+size = Vector3(0.3, 0.2, 0.2)
+material = ExtResource("3_rust")
+
+[node name="Chair" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.8, 0.45, 0)
+size = Vector3(0.5, 0.9, 0.5)
+use_collision = true
+material = ExtResource("3_rust")
+
+[node name="BunkBed" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.3, 1.0, 1.0)
+size = Vector3(1.2, 2.0, 2.0)
+use_collision = true
+material = ExtResource("3_rust")
+
+[node name="Cabinet" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5, 0.9, -1.6)
+size = Vector3(0.8, 1.8, 0.5)
+use_collision = true
+material = ExtResource("4_door")
+
+[node name="Box1" type="CSGBox3D" parent="."]
+transform = Transform3D(0.95, 0, -0.31, 0, 1, 0, 0.31, 0, 0.95, -2.5, 0.3, -1.7)
+size = Vector3(0.4, 0.6, 0.4)
+use_collision = true
+material = ExtResource("3_rust")
+
+[node name="Box2" type="CSGBox3D" parent="."]
+transform = Transform3D(0.87, 0, 0.5, 0, 1, 0, -0.5, 0, 0.87, -2.0, 0.25, -1.5)
+size = Vector3(0.35, 0.5, 0.35)
+use_collision = true
+material = ExtResource("3_rust")
+
+[node name="Box3" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.3, 0.75, -1.3)
+size = Vector3(0.3, 0.4, 0.3)
+use_collision = true
+material = ExtResource("3_rust")
+
+[node name="Pipe1" type="CSGCylinder3D" parent="."]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 0, 2.7, -1.9)
+radius = 0.06
+height = 5.8
+material = ExtResource("3_rust")
+
+[node name="Pipe2" type="CSGCylinder3D" parent="."]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 0, 2.5, -1.9)
+radius = 0.05
+height = 5.8
+material = ExtResource("3_rust")
+
+[node name="Pipe3" type="CSGCylinder3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.9, 2.3, 0)
+radius = 0.05
+height = 3.8
+material = ExtResource("3_rust")
+
+[node name="Poster" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.9, 1.7, 0.5)
+size = Vector3(0.02, 0.8, 0.6)
+material = ExtResource("3_rust")
+
+[node name="WaterPuddle" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.11, -1.7)
+size = Vector3(0.8, 0.01, 0.5)
+material = SubResource("Mat_water")
+
+[node name="FlickerLamp" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.7, 0)
+light_color = Color(1, 0.85, 0.6, 1)
+light_energy = 2.0
+omni_range = 6.0
+script = ExtResource("9_lamp")
+on_time = 2.0
+flicker_time = 0.5
+off_time = 1.0
+
+[node name="BedLamp" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.3, 1.8, 1.0)
+light_color = Color(1, 0.75, 0.55, 1)
+light_energy = 0.4
+omni_range = 2.0
+
+[node name="RedDoorLED" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.3, 1.85)
+light_color = Color(1, 0.1, 0.1, 1)
+light_energy = 0.5
+omni_range = 1.5
+
+[node name="AmbientFill" type="DirectionalLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.5, 0.866, 0, -0.866, 0.5, 0, 2.8, 0)
+light_color = Color(0.4, 0.45, 0.55, 1)
+light_energy = 0.08
+
+[node name="PipeDrip" type="GPUParticles3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.45, -1.9)
+amount = 4
+lifetime = 1.5
+process_material = SubResource("PPM_drip")
+draw_pass_1 = SubResource("SphereMesh_drip")
+
+[node name="VentSteam" type="GPUParticles3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 2.9, 1.2)
+amount = 16
+lifetime = 3.0
+process_material = SubResource("PPM_steam")
+draw_pass_1 = SubResource("SphereMesh_steam")
+
+[node name="Dust" type="GPUParticles3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+amount = 40
+lifetime = 8.0
+process_material = SubResource("PPM_dust")
+draw_pass_1 = SubResource("SphereMesh_dust")
+
+[node name="AmbienceHum" type="AudioStreamPlayer3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.9, 0)
+autoplay = true
+max_distance = 10.0
+unit_size = 2.0
+
+[node name="WaterDripAudio" type="AudioStreamPlayer3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.3, -1.9)
+autoplay = true
+max_distance = 5.0
+
+[node name="LampBuzz" type="AudioStreamPlayer3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.7, 0)
+autoplay = true
+max_distance = 4.0
+
 [node name="PlayerSpawn" type="Marker3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 1.5)
 
 [node name="Player" parent="." instance=ExtResource("5_player")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 1.5)
 
-[node name="EntranceDoor" parent="." instance=ExtResource("7_door")]
+[node name="SouthDoor" parent="." instance=ExtResource("8_lockdoor")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 1.9)
 
-[node name="ExitDoor" parent="." instance=ExtResource("7_door")]
+[node name="NorthDoor" parent="." instance=ExtResource("7_door")]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 1, -1.9)
 
 [node name="FlashlightDrawer" parent="." instance=ExtResource("6_drawer")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.8, 0.8, 0)
-
-[node name="AmbientFill" type="DirectionalLight3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0.5, 0.866, 0, -0.866, 0.5, 0, 2.8, 0)
-light_color = Color(0.4, 0.45, 0.55, 1)
-light_energy = 0.08
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.8, 0.6, 0)
 
 [node name="ToCorridor" type="Area3D" parent="."]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 1.25, -2.4)
@@ -162,3 +341,12 @@ checkpoint_id = "to_corridor"
 
 [node name="ToCorridorCollision" type="CollisionShape3D" parent="ToCorridor"]
 shape = SubResource("BoxShape3D_trigger")
+
+[node name="UI" type="CanvasLayer" parent="."]
+layer = 10
+
+[node name="GameHUD" parent="UI" instance=ExtResource("13_hud")]
+
+[node name="InventoryUI" parent="UI" instance=ExtResource("14_invui")]
+
+[node name="NoteViewer" parent="UI" instance=ExtResource("15_noteui")]
