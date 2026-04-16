@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="ItemResource" load_steps=2 format=3 uid="uid://bitemkey01"]
+
+[ext_resource type="Script" path="res://systems/inventory/item_resource.gd" id="1_item"]
+
+[resource]
+script = ExtResource("1_item")
+item_name = "Ржавый ключ"
+item_description = "Погнутый металлический ключ с пятнами ржавчины. Что-то им открывается."
+item_type = 1
+is_stackable = false
+max_stack = 1
+use_action = ""

@@ -1,22 +1,39 @@
 extends Control
-## Inventory window. Toggle with Tab/I. Pauses tree while open.
+## Inventory window (ThiDiamondDev-derived slot-grid pattern).
+## Toggle with Tab/I. Pauses tree, releases mouse on open, re-captures on close.
 
-@onready var grid: GridContainer = $Panel/Margin/VBox/Grid
-@onready var desc_label: Label = $Panel/Margin/VBox/Description
-@onready var use_button: Button = $Panel/Margin/VBox/UseButton
-@onready var title_label: Label = $Panel/Margin/VBox/Title
-
+const SlotScene: PackedScene = preload("res://scenes/ui/item_slot.tscn")
 const SLOT_COUNT: int = 8
 
-var _selected_name: String = ""
+@onready var grid: GridContainer = $Panel/Margin/VBox/Body/Grid
+@onready var title_label: Label = $Panel/Margin/VBox/Body/Details/Title
+@onready var desc_label: Label = $Panel/Margin/VBox/Body/Details/Description
+@onready var icon_preview: TextureRect = $Panel/Margin/VBox/Body/Details/IconPreview
+@onready var use_button: Button = $Panel/Margin/VBox/Body/Details/UseButton
+@onready var drop_button: Button = $Panel/Margin/VBox/Body/Details/DropButton
+
+var _slots: Array[InventorySlot] = []
+var _selected: InventorySlot = null
 
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	visible = false
+	_build_grid()
 	use_button.pressed.connect(_on_use_pressed)
+	drop_button.pressed.connect(_on_drop_pressed)
 	EventBus.item_collected.connect(func(_n: String) -> void: _refresh())
 	EventBus.item_used.connect(func(_n: String) -> void: _refresh())
+	_update_details(null)
+
+
+func _build_grid() -> void:
+	for i: int in range(SLOT_COUNT):
+		var slot: InventorySlot = SlotScene.instantiate()
+		slot.index = i
+		grid.add_child(slot)
+		slot.slot_pressed.connect(_on_slot_pressed)
+		_slots.append(slot)
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -33,37 +50,73 @@ func _toggle() -> void:
 	visible = not visible
 	get_tree().paused = visible
 	if visible:
+		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 		_refresh()
+	else:
+		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+		_deselect()
 
 
 func _refresh() -> void:
-	for c in grid.get_children():
-		c.queue_free()
+	for slot: InventorySlot in _slots:
+		slot.clear_slot()
 	var items: Array = InventoryManager.get_all_items()
-	for i in range(SLOT_COUNT):
-		var btn: Button = Button.new()
-		btn.custom_minimum_size = Vector2(96, 96)
-		if i < items.size():
-			var slot: Dictionary = items[i]
-			var res: ItemResource = slot.resource
-			btn.text = "%s\nx%d" % [res.item_name, slot.count]
-			btn.pressed.connect(_on_slot_pressed.bind(res))
-		else:
-			btn.text = ""
-			btn.disabled = true
-		grid.add_child(btn)
-	if _selected_name == "" or not InventoryManager.has_item(_selected_name):
+	for i: int in range(items.size()):
+		if i >= SLOT_COUNT:
+			break
+		var entry: Dictionary = items[i]
+		var res: ItemResource = entry.resource
+		if res:
+			_slots[i].set_item(res, int(entry.count))
+
+
+func _on_slot_pressed(slot: InventorySlot) -> void:
+	if slot.empty:
+		return
+	if _selected == slot:
+		_deselect()
+		return
+	if _selected:
+		_selected.set_selected(false)
+	_selected = slot
+	slot.set_selected(true)
+	_update_details(slot.item)
+
+
+func _deselect() -> void:
+	if _selected:
+		_selected.set_selected(false)
+		_selected = null
+	_update_details(null)
+
+
+func _update_details(item: ItemResource) -> void:
+	if item == null:
+		title_label.text = ""
 		desc_label.text = ""
+		icon_preview.texture = null
 		use_button.disabled = true
-
-
-func _on_slot_pressed(res: ItemResource) -> void:
-	_selected_name = res.item_name
-	desc_label.text = res.item_description
+		drop_button.disabled = true
+		return
+	title_label.text = item.item_name
+	desc_label.text = item.item_description
+	icon_preview.texture = item.item_icon
 	use_button.disabled = false
+	drop_button.disabled = item.item_type == ItemResource.ItemType.KEY_ITEM
 
 
 func _on_use_pressed() -> void:
-	if _selected_name != "":
-		InventoryManager.use_item(_selected_name)
-		_refresh()
+	if _selected == null or _selected.item == null:
+		return
+	var item_name: String = _selected.item.item_name
+	InventoryManager.use_item(item_name)
+	_refresh()
+	_deselect()
+
+
+func _on_drop_pressed() -> void:
+	if _selected == null or _selected.item == null:
+		return
+	InventoryManager.remove_item(_selected.item.item_name, 1)
+	_refresh()
+	_deselect()

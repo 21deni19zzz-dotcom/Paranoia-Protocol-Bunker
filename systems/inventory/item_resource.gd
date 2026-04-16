@@ -18,3 +18,7 @@ enum ItemType {
 @export var max_stack: int = 1
 ## Function name on InventoryManager (or attached handler) to call on use.
 @export var use_action: String = ""
+## Optional linked NoteResource when item_type == NOTE. Opens note viewer on use.
+@export var note: Resource = null
+## Optional: resources craftable from this one (ThiDiamondDev-style, currently stubs).
+@export var crafted_items: Array[Resource] = []
