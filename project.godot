@@ -17,7 +17,7 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 config/name="Paranoia Protocol: Bunker"
 config/description="Psychological horror FPS set in an underground bunker"
 config/tags=PackedStringArray("starterkit")
-run/main_scene="res://scenes/menus/opening/opening_with_logo.tscn"
+run/main_scene="res://scenes/levels/bunker_entrance.tscn"
 config/features=PackedStringArray("4.6", "Forward Plus")
 config/icon="res://icon.svg"
 boot_splash/bg_color=Color(0, 0, 0, 1)
@@ -31,14 +31,14 @@ ProjectUISoundController="*uid://cc37235kj4384"
 InputIconMapperGlobal="*uid://done0t0ojxyp1"
 GamePiecesEventBus="*uid://cm31gl2cxmt6y"
 SoundFxMgr="*res://scenes/sound_fx/sound_fx_mgr.tscn"
-Talo="*uid://cf5txmco4tia4"
-TaloGlobal="*res://scripts/talo_events.gd"
 co="*uid://bjkb7sfgdaofj"
 ImpactMgr="*uid://dsun3ccikxe7v"
 SceneRenderManager="*uid://mbume3uiijsw"
 EventBus="*res://systems/events/event_bus.gd"
 GameManager="*res://systems/events/game_manager.gd"
 ParanoiaManager="*res://systems/paranoia/paranoia_manager.gd"
+InventoryManager="*res://systems/inventory/inventory_manager.gd"
+SaveManager="*res://systems/save/save_manager.gd"
 
 [debug]
 
@@ -63,7 +63,7 @@ movie_writer/movie_file="/home/adeel/Videos/fpht.avi"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/apply_material_menu/plugin.cfg", "res://addons/brackeys_particle_controls/plugin.cfg", "res://addons/co/plugin.cfg", "res://addons/credits_generator/plugin.cfg", "res://addons/game_pieces/plugin.cfg", "res://addons/hl_impacts/plugin.cfg", "res://addons/maaacks_menus_template/plugin.cfg", "res://addons/prompt_formatters/plugin.cfg", "res://addons/proton_scatter/plugin.cfg", "res://addons/scene_texture/plugin.cfg", "res://addons/sound_fx_manager/plugin.cfg", "res://addons/talo/plugin.cfg")
+enabled=PackedStringArray("res://addons/apply_material_menu/plugin.cfg", "res://addons/brackeys_particle_controls/plugin.cfg", "res://addons/co/plugin.cfg", "res://addons/credits_generator/plugin.cfg", "res://addons/game_pieces/plugin.cfg", "res://addons/hl_impacts/plugin.cfg", "res://addons/maaacks_menus_template/plugin.cfg", "res://addons/prompt_formatters/plugin.cfg", "res://addons/proton_scatter/plugin.cfg", "res://addons/scene_texture/plugin.cfg", "res://addons/sound_fx_manager/plugin.cfg")
 
 [file_customization]
 

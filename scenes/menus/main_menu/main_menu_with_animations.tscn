@@ -379,7 +379,7 @@ theme_override_constants/margin_top = 96
 modulate = Color(1, 1, 1, 0)
 
 [node name="TitleLabel" parent="MenuContainer/TitleMargin/TitleContainer" index="0"]
-text = "First Person Horror Template"
+text = "PARANOIA PROTOCOL: BUNKER"
 
 [node name="SubTitleMargin" parent="MenuContainer" index="1"]
 theme_override_constants/margin_top = 200
@@ -397,6 +397,21 @@ lock = true
 unique_name_in_owner = true
 visible = false
 layout_mode = 2
-text = "Continue"
+text = "Продолжить"
+
+[node name="NewGameButton" parent="MenuContainer/MenuButtonsMargin/MenuButtonsContainer/MenuButtonsBoxContainer" index="0"]
+text = "Новая игра"
+
+[node name="OptionsButton" parent="MenuContainer/MenuButtonsMargin/MenuButtonsContainer/MenuButtonsBoxContainer" index="2"]
+text = "Настройки"
+
+[node name="CreditsButton" parent="MenuContainer/MenuButtonsMargin/MenuButtonsContainer/MenuButtonsBoxContainer" index="3"]
+text = "Авторы"
+
+[node name="ExitButton" parent="MenuContainer/MenuButtonsMargin/MenuButtonsContainer/MenuButtonsBoxContainer" index="4"]
+text = "Выход"
+
+[node name="BackButton" parent="FlowControlContainer/FlowControl"]
+text = "Назад"
 
 [connection signal="pressed" from="MenuContainer/MenuButtonsMargin/MenuButtonsContainer/MenuButtonsBoxContainer/ContinueGameButton" to="." method="_on_continue_game_button_pressed"]

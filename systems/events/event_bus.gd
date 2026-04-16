@@ -1,6 +1,9 @@
 extends Node
 ## Global event bus singleton.
 ## Decouples systems via signals — emit here, subscribe from anywhere.
+## Signals are referenced across files via EventBus.<name>.emit(...) which the
+## static analyzer cannot detect — silence unused-signal warnings for this file.
+@warning_ignore_start("unused_signal")
 
 # Paranoia
 signal paranoia_changed(new_value: float)

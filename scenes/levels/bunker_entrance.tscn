@@ -1,0 +1,164 @@
+[gd_scene load_steps=21 format=3 uid="uid://bbunker01"]
+
+[ext_resource type="Material" uid="uid://cmatconwall01" path="res://assets/materials/concrete_wall.tres" id="1_wall"]
+[ext_resource type="Script" path="res://scenes/props/door_scene_loader.gd" id="11_loader"]
+[ext_resource type="Material" uid="uid://cmatconfloor01" path="res://assets/materials/concrete_floor.tres" id="2_floor"]
+[ext_resource type="Material" uid="uid://cmatrust01" path="res://assets/materials/rusty_metal.tres" id="3_rust"]
+[ext_resource type="Material" uid="uid://cmatdoor01" path="res://assets/materials/door_metal.tres" id="4_door"]
+[ext_resource type="PackedScene" uid="uid://cvm1x6igaprq3" path="res://addons/player/player.tscn" id="5_player"]
+[ext_resource type="PackedScene" uid="uid://cqntmbp1q0a81" path="res://addons/game_pieces/amnesia_door/amnesia_door.tscn" id="6_amnesia"]
+[ext_resource type="PackedScene" uid="uid://bimo0ijo3l1di" path="res://addons/game_pieces/interactable_door/interactable_door.tscn" id="7_door"]
+[ext_resource type="Script" path="res://scenes/props/flickering_lamp.gd" id="8_lamp"]
+[ext_resource type="Script" path="res://scenes/props/note_pickup.gd" id="9_note"]
+[ext_resource type="Resource" uid="uid://bnoteday001" path="res://resources/notes/note_day1.tres" id="10_noteres"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_floor"]
+size = Vector3(6, 0.2, 4)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_floor"]
+size = Vector3(6, 0.2, 4)
+
+[sub_resource type="BoxMesh" id="BoxMesh_table"]
+size = Vector3(1.2, 0.8, 0.6)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_table"]
+size = Vector3(1.2, 0.8, 0.6)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_note"]
+size = Vector3(0.3, 0.05, 0.2)
+
+[sub_resource type="BoxMesh" id="BoxMesh_note"]
+size = Vector3(0.3, 0.02, 0.2)
+
+[sub_resource type="StandardMaterial3D" id="Mat_paper"]
+albedo_color = Color(0.85, 0.82, 0.68, 1)
+roughness = 0.9
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_trigger"]
+size = Vector3(2, 2.5, 0.5)
+
+[sub_resource type="Environment" id="Env_bunker"]
+background_mode = 1
+background_color = Color(0, 0, 0, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.05, 0.05, 0.07, 1)
+ambient_light_energy = 0.3
+tonemap_mode = 2
+glow_enabled = true
+glow_intensity = 0.4
+fog_enabled = true
+fog_light_color = Color(0.08, 0.08, 0.10, 1)
+fog_density = 0.05
+adjustment_enabled = true
+adjustment_contrast = 1.1
+adjustment_saturation = 0.9
+
+[node name="BunkerEntrance" type="Node3D"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Env_bunker")
+
+[node name="Floor" type="StaticBody3D" parent="."]
+
+[node name="FloorMesh" type="MeshInstance3D" parent="Floor"]
+mesh = SubResource("BoxMesh_floor")
+surface_material_override/0 = ExtResource("2_floor")
+
+[node name="FloorCollision" type="CollisionShape3D" parent="Floor"]
+shape = SubResource("BoxShape3D_floor")
+
+[node name="Ceiling" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, 0)
+
+[node name="CeilingMesh" type="MeshInstance3D" parent="Ceiling"]
+mesh = SubResource("BoxMesh_floor")
+surface_material_override/0 = ExtResource("1_wall")
+
+[node name="CeilingCollision" type="CollisionShape3D" parent="Ceiling"]
+shape = SubResource("BoxShape3D_floor")
+
+[node name="WallNorth" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, -2)
+size = Vector3(6, 3, 0.2)
+use_collision = true
+material = ExtResource("1_wall")
+
+[node name="WallSouth" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 2)
+size = Vector3(6, 3, 0.2)
+use_collision = true
+material = ExtResource("1_wall")
+
+[node name="WallEast" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 1.5, 0)
+size = Vector3(0.2, 3, 4)
+use_collision = true
+material = ExtResource("1_wall")
+
+[node name="WallWest" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3, 1.5, 0)
+size = Vector3(0.2, 3, 4)
+use_collision = true
+material = ExtResource("1_wall")
+
+[node name="FlickerLamp" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.7, 0)
+light_color = Color(1, 0.85, 0.6, 1)
+light_energy = 2.0
+omni_range = 6.0
+script = ExtResource("8_lamp")
+on_time = 2.0
+flicker_time = 0.5
+off_time = 1.0
+
+[node name="Table" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 0.4, 0)
+
+[node name="TableMesh" type="MeshInstance3D" parent="Table"]
+mesh = SubResource("BoxMesh_table")
+surface_material_override/0 = ExtResource("3_rust")
+
+[node name="TableCollision" type="CollisionShape3D" parent="Table"]
+shape = SubResource("BoxShape3D_table")
+
+[node name="NotePickup" type="Area3D" parent="Table" groups=["interactable"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.45, 0)
+script = ExtResource("9_note")
+note = ExtResource("10_noteres")
+paranoia_on_read = 10.0
+
+[node name="NoteCollision" type="CollisionShape3D" parent="Table/NotePickup"]
+shape = SubResource("BoxShape3D_note")
+
+[node name="NoteMesh" type="MeshInstance3D" parent="Table/NotePickup"]
+mesh = SubResource("BoxMesh_note")
+surface_material_override/0 = SubResource("Mat_paper")
+
+[node name="PlayerSpawn" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 1.5)
+
+[node name="Player" parent="." instance=ExtResource("5_player")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 1.5)
+
+[node name="EntranceDoor" parent="." instance=ExtResource("7_door")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 1.9)
+
+[node name="ExitDoor" parent="." instance=ExtResource("7_door")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 1, -1.9)
+
+[node name="FlashlightDrawer" parent="." instance=ExtResource("6_amnesia")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.8, 0.8, 0)
+
+[node name="AmbientFill" type="DirectionalLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.5, 0.866, 0, -0.866, 0.5, 0, 2.8, 0)
+light_color = Color(0.4, 0.45, 0.55, 1)
+light_energy = 0.08
+
+[node name="ToCorridor" type="Area3D" parent="."]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 1.25, -2.4)
+script = ExtResource("11_loader")
+target_scene = "res://scenes/levels/bunker_corridor.tscn"
+checkpoint_id = "to_corridor"
+
+[node name="ToCorridorCollision" type="CollisionShape3D" parent="ToCorridor"]
+shape = SubResource("BoxShape3D_trigger")
