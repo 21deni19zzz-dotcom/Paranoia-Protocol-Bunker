@@ -1,5 +1,10 @@
 extends LoadingScreen
 
+# SceneLoader's is_loading_scene() and _background_loading flag are declared
+# on the template autoload without static types — silence warnings here.
+@warning_ignore_start("unsafe_method_access")
+@warning_ignore_start("unsafe_property_access")
+
 @export_dir var _spatial_shader_material_dir : String
 @export_file("*.tscn") var _cache_shaders_scene : String
 @export var _mesh : Mesh

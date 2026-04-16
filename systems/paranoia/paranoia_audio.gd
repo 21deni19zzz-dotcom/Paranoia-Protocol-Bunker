@@ -26,7 +26,7 @@ func _ready() -> void:
 	_anxious = _fetch(anxious_player_path)
 	_fearful = _fetch(fearful_player_path)
 	_panic = _fetch(panic_player_path)
-	for p in [_uneasy, _anxious, _fearful, _panic]:
+	for p: AudioStreamPlayer in [_uneasy, _anxious, _fearful, _panic]:
 		if p:
 			p.volume_db = -80.0
 			_desired[p] = -80.0
@@ -42,7 +42,7 @@ func _fetch(path: NodePath) -> AudioStreamPlayer:
 
 
 func _process(delta: float) -> void:
-	for p in _desired.keys():
+	for p: AudioStreamPlayer in _desired.keys():
 		if p == null:
 			continue
 		var cur: float = p.volume_db
