@@ -93,13 +93,13 @@ func auto_save() -> void:
 
 func _serialize_inventory() -> Array:
 	var out: Array = []
-	for slot in InventoryManager.get_all_items():
+	for slot: Dictionary in InventoryManager.get_all_items():
 		var res: ItemResource = slot.resource
 		if res == null:
 			continue
 		out.append({
 			"item_name": res.item_name,
-			"count": slot.count,
+			"count": int(slot.count),
 			"resource_path": res.resource_path,
 		})
 	return out

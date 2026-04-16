@@ -13,12 +13,13 @@ func add_item(item: ItemResource, count: int = 1) -> bool:
 
 	# Try to stack onto an existing slot
 	if item.is_stackable:
-		for slot in items:
+		for slot: Dictionary in items:
 			var res: ItemResource = slot.resource
-			if res and res.item_name == item.item_name and slot.count < res.max_stack:
-				var space: int = res.max_stack - slot.count
+			var slot_count: int = slot.count
+			if res and res.item_name == item.item_name and slot_count < res.max_stack:
+				var space: int = res.max_stack - slot_count
 				var add: int = mini(space, count)
-				slot.count += add
+				slot.count = slot_count + add
 				count -= add
 				EventBus.item_collected.emit(item.item_name)
 				if count <= 0:
@@ -39,12 +40,13 @@ func add_item(item: ItemResource, count: int = 1) -> bool:
 
 func remove_item(item_name: String, count: int = 1) -> bool:
 	var remaining: int = count
-	for i in range(items.size() - 1, -1, -1):
+	for i: int in range(items.size() - 1, -1, -1):
 		var slot: Dictionary = items[i]
 		var res: ItemResource = slot.resource
 		if res and res.item_name == item_name:
-			var take: int = mini(slot.count, remaining)
-			slot.count -= take
+			var slot_count: int = slot.count
+			var take: int = mini(slot_count, remaining)
+			slot.count = slot_count - take
 			remaining -= take
 			if slot.count <= 0:
 				items.remove_at(i)
@@ -59,15 +61,15 @@ func has_item(item_name: String) -> bool:
 
 func get_item_count(item_name: String) -> int:
 	var total: int = 0
-	for slot in items:
+	for slot: Dictionary in items:
 		var res: ItemResource = slot.resource
 		if res and res.item_name == item_name:
-			total += slot.count
+			total += int(slot.count)
 	return total
 
 
 func use_item(item_name: String) -> void:
-	for slot in items:
+	for slot: Dictionary in items:
 		var res: ItemResource = slot.resource
 		if res and res.item_name == item_name:
 			if res.use_action != "" and has_method(res.use_action):

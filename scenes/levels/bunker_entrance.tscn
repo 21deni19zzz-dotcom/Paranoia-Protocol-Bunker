@@ -5,8 +5,8 @@
 [ext_resource type="Material" uid="uid://cmatconfloor01" path="res://assets/materials/concrete_floor.tres" id="2_floor"]
 [ext_resource type="Material" uid="uid://cmatrust01" path="res://assets/materials/rusty_metal.tres" id="3_rust"]
 [ext_resource type="Material" uid="uid://cmatdoor01" path="res://assets/materials/door_metal.tres" id="4_door"]
-[ext_resource type="PackedScene" uid="uid://cvm1x6igaprq3" path="res://addons/player/player.tscn" id="5_player"]
-[ext_resource type="PackedScene" uid="uid://cqntmbp1q0a81" path="res://addons/game_pieces/amnesia_door/amnesia_door.tscn" id="6_amnesia"]
+[ext_resource type="PackedScene" uid="uid://bia32vkq1a5i" path="res://scenes/player/player.tscn" id="5_player"]
+[ext_resource type="PackedScene" uid="uid://b8eom7lmmvqxh" path="res://scenes/pieces/drawer.tscn" id="6_drawer"]
 [ext_resource type="PackedScene" uid="uid://bimo0ijo3l1di" path="res://addons/game_pieces/interactable_door/interactable_door.tscn" id="7_door"]
 [ext_resource type="Script" path="res://scenes/props/flickering_lamp.gd" id="8_lamp"]
 [ext_resource type="Script" path="res://scenes/props/note_pickup.gd" id="9_note"]
@@ -146,7 +146,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 1.9)
 [node name="ExitDoor" parent="." instance=ExtResource("7_door")]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 1, -1.9)
 
-[node name="FlashlightDrawer" parent="." instance=ExtResource("6_amnesia")]
+[node name="FlashlightDrawer" parent="." instance=ExtResource("6_drawer")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.8, 0.8, 0)
 
 [node name="AmbientFill" type="DirectionalLight3D" parent="."]
