@@ -1,6 +1,7 @@
-[gd_scene load_steps=19 format=3 uid="uid://bbunker01"]
+[gd_scene load_steps=21 format=3 uid="uid://bbunker01"]
 
 [ext_resource type="Material" uid="uid://cmatconwall01" path="res://assets/materials/concrete_wall.tres" id="1_wall"]
+[ext_resource type="Script" path="res://scenes/props/door_scene_loader.gd" id="11_loader"]
 [ext_resource type="Material" uid="uid://cmatconfloor01" path="res://assets/materials/concrete_floor.tres" id="2_floor"]
 [ext_resource type="Material" uid="uid://cmatrust01" path="res://assets/materials/rusty_metal.tres" id="3_rust"]
 [ext_resource type="Material" uid="uid://cmatdoor01" path="res://assets/materials/door_metal.tres" id="4_door"]
@@ -32,6 +33,9 @@ size = Vector3(0.3, 0.02, 0.2)
 [sub_resource type="StandardMaterial3D" id="Mat_paper"]
 albedo_color = Color(0.85, 0.82, 0.68, 1)
 roughness = 0.9
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_trigger"]
+size = Vector3(2, 2.5, 0.5)
 
 [sub_resource type="Environment" id="Env_bunker"]
 background_mode = 1
@@ -149,3 +153,12 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.8, 0.8, 0)
 transform = Transform3D(1, 0, 0, 0, 0.5, 0.866, 0, -0.866, 0.5, 0, 2.8, 0)
 light_color = Color(0.4, 0.45, 0.55, 1)
 light_energy = 0.08
+
+[node name="ToCorridor" type="Area3D" parent="."]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 1.25, -2.4)
+script = ExtResource("11_loader")
+target_scene = "res://scenes/levels/bunker_corridor.tscn"
+checkpoint_id = "to_corridor"
+
+[node name="ToCorridorCollision" type="CollisionShape3D" parent="ToCorridor"]
+shape = SubResource("BoxShape3D_trigger")

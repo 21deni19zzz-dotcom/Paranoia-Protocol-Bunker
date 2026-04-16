@@ -1,69 +1,102 @@
-[gd_scene load_steps=8 format=3 uid="uid://bpbunkercorr01"]
+[gd_scene load_steps=19 format=3 uid="uid://bbunker02"]
 
-[ext_resource type="PackedScene" uid="uid://bia32vkq1a5i" path="res://scenes/player/player.tscn" id="1_player"]
-[ext_resource type="Environment" uid="uid://dr0jllowrdeg1" path="res://resources/environment.tres" id="2_env"]
-[ext_resource type="PackedScene" uid="uid://dgqg1bjfa5smg" path="res://scenes/pieces/interactable_door.tscn" id="3_door"]
-[ext_resource type="PackedScene" uid="uid://crmffc87i8wof" path="res://scenes/pieces/lockable_interactable_door.tscn" id="4_lockdoor"]
-[ext_resource type="Script" path="res://scenes/props/dark_zone.gd" id="5_dark"]
+[ext_resource type="Material" uid="uid://cmatconwall01" path="res://assets/materials/concrete_wall.tres" id="1_wall"]
+[ext_resource type="Material" uid="uid://cmatconfloor01" path="res://assets/materials/concrete_floor.tres" id="2_floor"]
+[ext_resource type="Material" uid="uid://cmatrust01" path="res://assets/materials/rusty_metal.tres" id="3_rust"]
+[ext_resource type="PackedScene" uid="uid://cvm1x6igaprq3" path="res://addons/player/player.tscn" id="4_player"]
+[ext_resource type="PackedScene" uid="uid://bimo0ijo3l1di" path="res://addons/game_pieces/interactable_door/interactable_door.tscn" id="5_door"]
+[ext_resource type="Script" path="res://scenes/props/dark_zone.gd" id="6_dark"]
+[ext_resource type="Script" path="res://scenes/props/battery_pickup.gd" id="7_batt"]
+[ext_resource type="Script" path="res://scenes/props/door_scene_loader.gd" id="8_loader"]
+[ext_resource type="Resource" uid="uid://bitembatt01" path="res://resources/items/battery.tres" id="9_battres"]
 
-[sub_resource type="StandardMaterial3D" id="Mat_concrete"]
-albedo_color = Color(0.3, 0.28, 0.26, 1)
-roughness = 0.95
+[sub_resource type="BoxMesh" id="BoxMesh_floor"]
+size = Vector3(2.5, 0.2, 10)
 
-[sub_resource type="BoxShape3D" id="Shape_dark"]
+[sub_resource type="BoxShape3D" id="BoxShape3D_floor"]
+size = Vector3(2.5, 0.2, 10)
+
+[sub_resource type="BoxMesh" id="BoxMesh_batt"]
+size = Vector3(0.1, 0.05, 0.03)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_batt"]
+size = Vector3(0.1, 0.05, 0.03)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_dark"]
 size = Vector3(2.5, 2.8, 6)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_trigger"]
+size = Vector3(2, 2.5, 0.5)
+
+[sub_resource type="Environment" id="Env_corridor"]
+background_mode = 1
+background_color = Color(0, 0, 0, 1)
+ambient_light_source = 2
+ambient_light_color = Color(0.03, 0.03, 0.04, 1)
+ambient_light_energy = 0.2
+tonemap_mode = 2
+glow_enabled = true
+glow_intensity = 0.3
+fog_enabled = true
+fog_light_color = Color(0.05, 0.05, 0.07, 1)
+fog_density = 0.15
+adjustment_enabled = true
+adjustment_contrast = 1.15
+adjustment_saturation = 0.8
+
+[sub_resource type="LabelSettings" id="LabelSettings_blood"]
+font_size = 64
+font_color = Color(0.7, 0.05, 0.05, 1)
+outline_size = 4
+outline_color = Color(0.2, 0, 0, 1)
 
 [node name="BunkerCorridor" type="Node3D"]
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
-environment = ExtResource("2_env")
+environment = SubResource("Env_corridor")
 
-[node name="PlayerSpawn" type="Marker3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 4.5)
+[node name="Floor" type="StaticBody3D" parent="."]
 
-[node name="Player" parent="." instance=ExtResource("1_player")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 4.5)
+[node name="FloorMesh" type="MeshInstance3D" parent="Floor"]
+mesh = SubResource("BoxMesh_floor")
+surface_material_override/0 = ExtResource("2_floor")
 
-[node name="Geometry" type="Node3D" parent="."]
+[node name="FloorCollision" type="CollisionShape3D" parent="Floor"]
+shape = SubResource("BoxShape3D_floor")
 
-[node name="Floor" type="CSGBox3D" parent="Geometry"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
-size = Vector3(2.5, 0.2, 10)
-material = SubResource("Mat_concrete")
-
-[node name="Ceiling" type="CSGBox3D" parent="Geometry"]
+[node name="Ceiling" type="StaticBody3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.8, 0)
-size = Vector3(2.5, 0.2, 10)
-material = SubResource("Mat_concrete")
 
-[node name="WallEast" type="CSGBox3D" parent="Geometry"]
+[node name="CeilingMesh" type="MeshInstance3D" parent="Ceiling"]
+mesh = SubResource("BoxMesh_floor")
+surface_material_override/0 = ExtResource("1_wall")
+
+[node name="CeilingCollision" type="CollisionShape3D" parent="Ceiling"]
+shape = SubResource("BoxShape3D_floor")
+
+[node name="WallEast" type="CSGBox3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.25, 1.4, 0)
 size = Vector3(0.2, 2.8, 10)
-material = SubResource("Mat_concrete")
+use_collision = true
+material = ExtResource("1_wall")
 
-[node name="WallWest" type="CSGBox3D" parent="Geometry"]
+[node name="WallWest" type="CSGBox3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.25, 1.4, 0)
 size = Vector3(0.2, 2.8, 10)
-material = SubResource("Mat_concrete")
+use_collision = true
+material = ExtResource("1_wall")
 
-[node name="WallNorth" type="CSGBox3D" parent="Geometry"]
+[node name="WallNorth" type="CSGBox3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, -5)
 size = Vector3(2.5, 2.8, 0.2)
-material = SubResource("Mat_concrete")
+use_collision = true
+material = ExtResource("1_wall")
 
-[node name="WallSouth" type="CSGBox3D" parent="Geometry"]
+[node name="WallSouth" type="CSGBox3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, 5)
 size = Vector3(2.5, 2.8, 0.2)
-material = SubResource("Mat_concrete")
-
-[node name="EntryDoor" parent="." instance=ExtResource("3_door")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0, 4.9)
-
-[node name="SideLockedDoor" parent="." instance=ExtResource("4_lockdoor")]
-transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 1.2, 0.0, 0.0)
-
-[node name="ExitDoor" parent="." instance=ExtResource("3_door")]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0.0, -4.9)
+use_collision = true
+material = ExtResource("1_wall")
 
 [node name="WorkingLamp" type="OmniLight3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 3.5)
@@ -71,10 +104,64 @@ light_color = Color(1, 0.87, 0.6, 1)
 light_energy = 2.0
 omni_range = 4.0
 
+[node name="DeadLamp1" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 0)
+light_color = Color(1, 0.7, 0.5, 1)
+light_energy = 0.05
+omni_range = 2.0
+
+[node name="DeadLamp2" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, -3.0)
+light_color = Color(1, 0.7, 0.5, 1)
+light_energy = 0.05
+omni_range = 2.0
+
+[node name="BloodLabel" type="Label3D" parent="."]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 1.8, -4.85)
+pixel_size = 0.004
+text = "ОНИ СЛЫШАТ"
+label_settings = SubResource("LabelSettings_blood")
+billboard = 0
+no_depth_test = false
+
+[node name="BatteryPickup" type="Area3D" parent="." groups=["interactable"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0.15, -1.5)
+script = ExtResource("7_batt")
+item = ExtResource("9_battres")
+recharge_amount = 50.0
+
+[node name="BatteryCollision" type="CollisionShape3D" parent="BatteryPickup"]
+shape = SubResource("BoxShape3D_batt")
+
+[node name="BatteryMesh" type="MeshInstance3D" parent="BatteryPickup"]
+mesh = SubResource("BoxMesh_batt")
+surface_material_override/0 = ExtResource("3_rust")
+
 [node name="DarkZone" type="Area3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, -1.5)
-script = ExtResource("5_dark")
+script = ExtResource("6_dark")
 extra_growth_per_sec = 5.0
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="DarkZone"]
-shape = SubResource("Shape_dark")
+[node name="DarkZoneCollision" type="CollisionShape3D" parent="DarkZone"]
+shape = SubResource("BoxShape3D_dark")
+
+[node name="PlayerSpawn" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 4.5)
+
+[node name="Player" parent="." instance=ExtResource("4_player")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 4.5)
+
+[node name="EntryDoor" parent="." instance=ExtResource("5_door")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 4.9)
+
+[node name="ExitDoor" parent="." instance=ExtResource("5_door")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 1, -4.9)
+
+[node name="BackToEntrance" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.25, 5.4)
+script = ExtResource("8_loader")
+target_scene = "res://scenes/levels/bunker_entrance.tscn"
+checkpoint_id = "corridor_back"
+
+[node name="BackTriggerCollision" type="CollisionShape3D" parent="BackToEntrance"]
+shape = SubResource("BoxShape3D_trigger")
