@@ -1,4 +1,4 @@
-[gd_scene load_steps=35 format=3 uid="uid://bbunker01"]
+[gd_scene load_steps=37 format=3 uid="uid://bbunker01"]
 
 [ext_resource type="Material" uid="uid://cmatconwall01" path="res://assets/materials/concrete_wall.tres" id="1_wall"]
 [ext_resource type="Material" uid="uid://cmatconfloor01" path="res://assets/materials/concrete_floor.tres" id="2_floor"]
@@ -15,6 +15,8 @@
 [ext_resource type="PackedScene" uid="uid://bp8gamehud001" path="res://scenes/ui/game_hud.tscn" id="13_hud"]
 [ext_resource type="PackedScene" uid="uid://bpinvui001" path="res://scenes/ui/inventory_ui.tscn" id="14_invui"]
 [ext_resource type="PackedScene" uid="uid://bpnoteview001" path="res://scenes/ui/note_viewer_ui.tscn" id="15_noteui"]
+[ext_resource type="Script" path="res://scenes/props/flashlight_pickup.gd" id="16_flpickup"]
+[ext_resource type="Resource" uid="uid://bitemflash01" path="res://assets/items/flashlight.tres" id="17_flres"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_floor"]
 size = Vector3(6, 0.2, 4)
@@ -332,6 +334,14 @@ transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 1, -1.9)
 
 [node name="FlashlightDrawer" parent="." instance=ExtResource("6_drawer")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.8, 0.6, 0)
+
+[node name="FlashlightPickup" type="Area3D" parent="Cabinet" groups=["interactable"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.95, 0)
+script = ExtResource("16_flpickup")
+item = ExtResource("17_flres")
+
+[node name="FlashlightCollision" type="CollisionShape3D" parent="Cabinet/FlashlightPickup"]
+shape = SubResource("BoxShape3D_note")
 
 [node name="ToCorridor" type="Area3D" parent="."]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 1.25, -2.4)

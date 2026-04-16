@@ -1,6 +1,7 @@
 extends CanvasLayer
 ## In-game HUD: battery bar, paranoia eye, interaction prompt, crosshair, toasts.
 
+@onready var battery_box: HBoxContainer = $Margin/HUDRoot/BatteryBox
 @onready var battery_bar: ProgressBar = $Margin/HUDRoot/BatteryBox/BatteryBar
 @onready var battery_icon: ColorRect = $Margin/HUDRoot/BatteryBox/BatteryIcon
 @onready var paranoia_icon: ColorRect = $Margin/HUDRoot/ParanoiaIcon
@@ -24,6 +25,8 @@ func _ready() -> void:
 	EventBus.item_collected.connect(_on_item_collected)
 	if toast_label:
 		toast_label.modulate.a = 0.0
+	if battery_box:
+		battery_box.visible = false
 
 
 func _process(delta: float) -> void:
@@ -38,6 +41,8 @@ func _process(delta: float) -> void:
 
 
 func _on_battery_changed(percent: float) -> void:
+	if battery_box and not battery_box.visible:
+		battery_box.visible = true
 	if battery_bar:
 		battery_bar.value = percent
 	if battery_icon:

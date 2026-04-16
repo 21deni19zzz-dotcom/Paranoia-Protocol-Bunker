@@ -1,44 +1,44 @@
 extends Node3D
 class_name FlashlightSystem
-## Player flashlight. Attach as child of head/camera.
-## Owns a SpotLight3D and AudioStreamPlayer3D.
+## Self-contained player flashlight. Instantiate as child of Player/Head/Camera3D.
+## Auto-creates its SpotLight3D child on _ready. F toggles. Adds itself to group "flashlight".
 
 @export var is_on: bool = false
 @export var battery: float = 100.0
 @export var drain_rate: float = 2.0  # %/sec
 @export var flicker_threshold: float = 15.0
-@export var min_battery_to_emit: float = 1.0
-
-@export var spot_light_path: NodePath
-@export var click_audio_path: NodePath
+@export var min_battery_to_start: float = 1.0
+@export var spot_angle_deg: float = 35.0
+@export var spot_range: float = 12.0
+@export var emit_interval: float = 0.5
 
 var _spot: SpotLight3D
-var _click: AudioStreamPlayer3D
+var _base_energy: float = 2.0
 var _flicker_timer: float = 0.0
-var _base_energy: float = 4.0
+var _emit_accum: float = 0.0
 
 
 func _ready() -> void:
-	if spot_light_path != NodePath():
-		_spot = get_node_or_null(spot_light_path) as SpotLight3D
-	if click_audio_path != NodePath():
-		_click = get_node_or_null(click_audio_path) as AudioStreamPlayer3D
-	if _spot:
-		_base_energy = _spot.light_energy
-		_spot.visible = is_on
+	add_to_group(&"flashlight")
+	_spot = SpotLight3D.new()
+	_spot.light_color = Color(1.0, 0.87, 0.65)
+	_spot.light_energy = _base_energy
+	_spot.spot_range = spot_range
+	_spot.spot_angle = spot_angle_deg
+	_spot.shadow_enabled = true
+	_spot.visible = is_on
+	add_child(_spot)
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if event.is_action_pressed(&"interact") and Input.is_key_pressed(KEY_F):
-		# fallback handled below
-		pass
-	# Direct F key toggle (interact is also F by default; this is a placeholder hook)
+	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_F:
+		toggle()
+		get_viewport().set_input_as_handled()
 
 
 func _process(delta: float) -> void:
 	if is_on and battery > 0.0:
 		battery = maxf(0.0, battery - drain_rate * delta)
-		EventBus.flashlight_battery_changed.emit(battery)
 		if battery <= flicker_threshold:
 			_apply_flicker(delta)
 		else:
@@ -46,15 +46,17 @@ func _process(delta: float) -> void:
 				_spot.light_energy = _base_energy
 		if battery <= 0.0:
 			_set_on(false)
-		_update_paranoia_modifiers()
+	_emit_accum += delta
+	if _emit_accum >= emit_interval:
+		_emit_accum = 0.0
+		EventBus.flashlight_battery_changed.emit(battery)
+	_update_paranoia_modifiers()
 
 
 func toggle() -> void:
-	if not is_on and battery <= min_battery_to_emit:
+	if not is_on and battery <= min_battery_to_start:
 		return
 	_set_on(not is_on)
-	if _click:
-		_click.play()
 
 
 func recharge(amount: float) -> void:
@@ -79,9 +81,7 @@ func _apply_flicker(delta: float) -> void:
 
 
 func _update_paranoia_modifiers() -> void:
-	# Flashlight ON with healthy battery: faster decay, slower growth
-	# OFF or near-dead: faster growth
-	if not Engine.has_singleton("ParanoiaManager") and not is_instance_valid(ParanoiaManager):
+	if not is_instance_valid(ParanoiaManager):
 		return
 	if is_on and battery > 20.0:
 		ParanoiaManager.decay_multiplier = 1.5
