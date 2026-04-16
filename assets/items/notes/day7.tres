@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="NoteResource" load_steps=2 format=3 uid="uid://bnoteday007"]
+
+[ext_resource type="Script" path="res://systems/inventory/note_resource.gd" id="1_note"]
+
+[resource]
+script = ExtResource("1_note")
+note_id = "day_7_medical"
+title = "День 7"
+content = "Слышу голоса из вентиляции. Говорят на языке, которого я не знаю.
+Перестал спать. Бинты кончаются. На руке появились следы — не помню,
+откуда."
+is_read = false

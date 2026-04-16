@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="NoteResource" load_steps=2 format=3 uid="uid://bnoteday003"]
+
+[ext_resource type="Script" path="res://systems/inventory/note_resource.gd" id="1_note"]
+
+[resource]
+script = ExtResource("1_note")
+note_id = "day_3_corridor"
+title = "День 3"
+content = "Вода из труб идёт. Еды хватит на месяц. Обследовал коридор —
+там что-то не так. Лампы сами выключаются, когда прохожу.
+Или мне кажется."
+is_read = false

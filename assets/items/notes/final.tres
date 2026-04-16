@@ -1,0 +1,12 @@
+[gd_resource type="Resource" script_class="NoteResource" load_steps=2 format=3 uid="uid://bnotefinal"]
+
+[ext_resource type="Script" path="res://systems/inventory/note_resource.gd" id="1_note"]
+
+[resource]
+script = ExtResource("1_note")
+note_id = "final_command"
+title = "Последняя запись"
+content = "Понял. Меня никто не закрыл. Я заперся сам. Снаружи всё нормально.
+Это я сломался. Но выйти уже не смогу — забыл как.
+Протокол: паранойя. Диагноз: окончательный."
+is_read = false

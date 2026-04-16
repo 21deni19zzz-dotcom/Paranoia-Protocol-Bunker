@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=3 uid="uid://bbunker02"]
+[gd_scene load_steps=20 format=3 uid="uid://bbunker02"]
 
 [ext_resource type="Material" uid="uid://cmatconwall01" path="res://assets/materials/concrete_wall.tres" id="1_wall"]
 [ext_resource type="Material" uid="uid://cmatconfloor01" path="res://assets/materials/concrete_floor.tres" id="2_floor"]
@@ -8,13 +8,23 @@
 [ext_resource type="Script" path="res://scenes/props/dark_zone.gd" id="6_dark"]
 [ext_resource type="Script" path="res://scenes/props/battery_pickup.gd" id="7_batt"]
 [ext_resource type="Script" path="res://scenes/props/door_scene_loader.gd" id="8_loader"]
-[ext_resource type="Resource" uid="uid://bitembatt01" path="res://resources/items/battery.tres" id="9_battres"]
+[ext_resource type="Script" path="res://scenes/props/flickering_lamp.gd" id="9_lamp"]
+[ext_resource type="Resource" uid="uid://bitembatt01" path="res://assets/items/battery.tres" id="10_battres"]
+[ext_resource type="PackedScene" uid="uid://bp8gamehud001" path="res://scenes/ui/game_hud.tscn" id="11_hud"]
+[ext_resource type="PackedScene" uid="uid://bpinvui001" path="res://scenes/ui/inventory_ui.tscn" id="12_invui"]
+[ext_resource type="PackedScene" uid="uid://bpnoteview001" path="res://scenes/ui/note_viewer_ui.tscn" id="13_noteui"]
 
-[sub_resource type="BoxMesh" id="BoxMesh_floor"]
+[sub_resource type="BoxMesh" id="BoxMesh_floorA"]
 size = Vector3(2.5, 0.2, 10)
 
-[sub_resource type="BoxShape3D" id="BoxShape3D_floor"]
+[sub_resource type="BoxShape3D" id="BoxShape3D_floorA"]
 size = Vector3(2.5, 0.2, 10)
+
+[sub_resource type="BoxMesh" id="BoxMesh_floorB"]
+size = Vector3(6, 0.2, 2.5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_floorB"]
+size = Vector3(6, 0.2, 2.5)
 
 [sub_resource type="BoxMesh" id="BoxMesh_batt"]
 size = Vector3(0.1, 0.05, 0.03)
@@ -28,7 +38,7 @@ size = Vector3(2.5, 2.8, 6)
 [sub_resource type="BoxShape3D" id="BoxShape3D_trigger"]
 size = Vector3(2, 2.5, 0.5)
 
-[sub_resource type="Environment" id="Env_corridor"]
+[sub_resource type="Environment" id="Env_corr"]
 background_mode = 1
 background_color = Color(0, 0, 0, 1)
 ambient_light_source = 2
@@ -44,7 +54,7 @@ adjustment_enabled = true
 adjustment_contrast = 1.15
 adjustment_saturation = 0.8
 
-[sub_resource type="LabelSettings" id="LabelSettings_blood"]
+[sub_resource type="LabelSettings" id="LS_blood"]
 font_size = 64
 font_color = Color(0.7, 0.05, 0.05, 1)
 outline_size = 4
@@ -53,96 +63,151 @@ outline_color = Color(0.2, 0, 0, 1)
 [node name="BunkerCorridor" type="Node3D"]
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
-environment = SubResource("Env_corridor")
+environment = SubResource("Env_corr")
 
-[node name="Floor" type="StaticBody3D" parent="."]
+[node name="SegmentA" type="Node3D" parent="."]
 
-[node name="FloorMesh" type="MeshInstance3D" parent="Floor"]
-mesh = SubResource("BoxMesh_floor")
+[node name="FloorA" type="StaticBody3D" parent="SegmentA"]
+
+[node name="FloorAMesh" type="MeshInstance3D" parent="SegmentA/FloorA"]
+mesh = SubResource("BoxMesh_floorA")
 surface_material_override/0 = ExtResource("2_floor")
 
-[node name="FloorCollision" type="CollisionShape3D" parent="Floor"]
-shape = SubResource("BoxShape3D_floor")
+[node name="FloorACollision" type="CollisionShape3D" parent="SegmentA/FloorA"]
+shape = SubResource("BoxShape3D_floorA")
 
-[node name="Ceiling" type="StaticBody3D" parent="."]
+[node name="CeilingA" type="StaticBody3D" parent="SegmentA"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.8, 0)
 
-[node name="CeilingMesh" type="MeshInstance3D" parent="Ceiling"]
-mesh = SubResource("BoxMesh_floor")
+[node name="CeilingAMesh" type="MeshInstance3D" parent="SegmentA/CeilingA"]
+mesh = SubResource("BoxMesh_floorA")
 surface_material_override/0 = ExtResource("1_wall")
 
-[node name="CeilingCollision" type="CollisionShape3D" parent="Ceiling"]
-shape = SubResource("BoxShape3D_floor")
+[node name="CeilingACollision" type="CollisionShape3D" parent="SegmentA/CeilingA"]
+shape = SubResource("BoxShape3D_floorA")
 
-[node name="WallEast" type="CSGBox3D" parent="."]
+[node name="WallAEast" type="CSGBox3D" parent="SegmentA"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.25, 1.4, 0)
 size = Vector3(0.2, 2.8, 10)
 use_collision = true
 material = ExtResource("1_wall")
 
-[node name="WallWest" type="CSGBox3D" parent="."]
+[node name="WallAWest" type="CSGBox3D" parent="SegmentA"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.25, 1.4, 0)
 size = Vector3(0.2, 2.8, 10)
 use_collision = true
 material = ExtResource("1_wall")
 
-[node name="WallNorth" type="CSGBox3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, -5)
+[node name="WallANorthBlock" type="CSGBox3D" parent="SegmentA"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 1.4, -5)
 size = Vector3(2.5, 2.8, 0.2)
 use_collision = true
 material = ExtResource("1_wall")
 
-[node name="WallSouth" type="CSGBox3D" parent="."]
+[node name="WallASouth" type="CSGBox3D" parent="SegmentA"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, 5)
 size = Vector3(2.5, 2.8, 0.2)
 use_collision = true
 material = ExtResource("1_wall")
 
-[node name="WorkingLamp" type="OmniLight3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 3.5)
+[node name="SegmentB" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5, 0, -6.25)
+
+[node name="FloorB" type="StaticBody3D" parent="SegmentB"]
+
+[node name="FloorBMesh" type="MeshInstance3D" parent="SegmentB/FloorB"]
+mesh = SubResource("BoxMesh_floorB")
+surface_material_override/0 = ExtResource("2_floor")
+
+[node name="FloorBCollision" type="CollisionShape3D" parent="SegmentB/FloorB"]
+shape = SubResource("BoxShape3D_floorB")
+
+[node name="CeilingB" type="StaticBody3D" parent="SegmentB"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.8, 0)
+
+[node name="CeilingBMesh" type="MeshInstance3D" parent="SegmentB/CeilingB"]
+mesh = SubResource("BoxMesh_floorB")
+surface_material_override/0 = ExtResource("1_wall")
+
+[node name="CeilingBCollision" type="CollisionShape3D" parent="SegmentB/CeilingB"]
+shape = SubResource("BoxShape3D_floorB")
+
+[node name="WallBNorth" type="CSGBox3D" parent="SegmentB"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, -1.25)
+size = Vector3(6, 2.8, 0.2)
+use_collision = true
+material = ExtResource("1_wall")
+
+[node name="WallBSouthBlock" type="CSGBox3D" parent="SegmentB"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.25, 1.4, 1.25)
+size = Vector3(3.5, 2.8, 0.2)
+use_collision = true
+material = ExtResource("1_wall")
+
+[node name="WallBEast" type="CSGBox3D" parent="SegmentB"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3, 1.4, 0)
+size = Vector3(0.2, 2.8, 2.5)
+use_collision = true
+material = ExtResource("1_wall")
+
+[node name="FlickerLampStart" type="OmniLight3D" parent="SegmentA"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 4.0)
 light_color = Color(1, 0.87, 0.6, 1)
 light_energy = 2.0
 omni_range = 4.0
+script = ExtResource("9_lamp")
+on_time = 1.5
+flicker_time = 0.4
+off_time = 0.7
 
-[node name="DeadLamp1" type="OmniLight3D" parent="."]
+[node name="DeadLamp1" type="OmniLight3D" parent="SegmentA"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 0)
 light_color = Color(1, 0.7, 0.5, 1)
 light_energy = 0.05
 omni_range = 2.0
 
-[node name="DeadLamp2" type="OmniLight3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, -3.0)
+[node name="DeadLamp2" type="OmniLight3D" parent="SegmentA"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, -3.5)
 light_color = Color(1, 0.7, 0.5, 1)
 light_energy = 0.05
 omni_range = 2.0
 
-[node name="BloodLabel" type="Label3D" parent="."]
+[node name="CornerLamp" type="OmniLight3D" parent="SegmentB"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 0)
+light_color = Color(1, 0.85, 0.7, 1)
+light_energy = 0.6
+omni_range = 2.5
+
+[node name="BloodLabel" type="Label3D" parent="SegmentA"]
 transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 1.8, -4.85)
 pixel_size = 0.004
 text = "ОНИ СЛЫШАТ"
-label_settings = SubResource("LabelSettings_blood")
-billboard = 0
-no_depth_test = false
+label_settings = SubResource("LS_blood")
 
-[node name="BatteryPickup" type="Area3D" parent="." groups=["interactable"]]
+[node name="BatteryPickup" type="Area3D" parent="SegmentA" groups=["interactable"]]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 0.15, -1.5)
 script = ExtResource("7_batt")
-item = ExtResource("9_battres")
+item = ExtResource("10_battres")
 recharge_amount = 50.0
 
-[node name="BatteryCollision" type="CollisionShape3D" parent="BatteryPickup"]
+[node name="BatteryCollision" type="CollisionShape3D" parent="SegmentA/BatteryPickup"]
 shape = SubResource("BoxShape3D_batt")
 
-[node name="BatteryMesh" type="MeshInstance3D" parent="BatteryPickup"]
+[node name="BatteryMesh" type="MeshInstance3D" parent="SegmentA/BatteryPickup"]
 mesh = SubResource("BoxMesh_batt")
 surface_material_override/0 = ExtResource("3_rust")
 
-[node name="DarkZone" type="Area3D" parent="."]
+[node name="DripAudio" type="AudioStreamPlayer3D" parent="SegmentA"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.3, -2.5)
+autoplay = true
+max_distance = 8.0
+
+[node name="DarkZone" type="Area3D" parent="SegmentA"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, -1.5)
 script = ExtResource("6_dark")
 extra_growth_per_sec = 5.0
 
-[node name="DarkZoneCollision" type="CollisionShape3D" parent="DarkZone"]
+[node name="DarkZoneCollision" type="CollisionShape3D" parent="SegmentA/DarkZone"]
 shape = SubResource("BoxShape3D_dark")
 
 [node name="PlayerSpawn" type="Marker3D" parent="."]
@@ -154,8 +219,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 4.5)
 [node name="EntryDoor" parent="." instance=ExtResource("5_door")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 4.9)
 
-[node name="ExitDoor" parent="." instance=ExtResource("5_door")]
-transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 1, -4.9)
+[node name="MedicalDoor" parent="." instance=ExtResource("5_door")]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 5.4, 1, -6.25)
 
 [node name="BackToEntrance" type="Area3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.25, 5.4)
@@ -165,3 +230,21 @@ checkpoint_id = "corridor_back"
 
 [node name="BackTriggerCollision" type="CollisionShape3D" parent="BackToEntrance"]
 shape = SubResource("BoxShape3D_trigger")
+
+[node name="ToMedical" type="Area3D" parent="."]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 5.9, 1.25, -6.25)
+script = ExtResource("8_loader")
+target_scene = "res://scenes/levels/bunker_medical.tscn"
+checkpoint_id = "to_medical"
+
+[node name="ToMedicalCollision" type="CollisionShape3D" parent="ToMedical"]
+shape = SubResource("BoxShape3D_trigger")
+
+[node name="UI" type="CanvasLayer" parent="."]
+layer = 10
+
+[node name="GameHUD" parent="UI" instance=ExtResource("11_hud")]
+
+[node name="InventoryUI" parent="UI" instance=ExtResource("12_invui")]
+
+[node name="NoteViewer" parent="UI" instance=ExtResource("13_noteui")]

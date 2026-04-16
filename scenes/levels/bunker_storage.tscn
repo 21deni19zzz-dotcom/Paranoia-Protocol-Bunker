@@ -1,0 +1,199 @@
+[gd_scene load_steps=17 format=3 uid="uid://bbunker04"]
+
+[ext_resource type="Material" uid="uid://cmatconwall01" path="res://assets/materials/concrete_wall.tres" id="1_wall"]
+[ext_resource type="Material" uid="uid://cmatconfloor01" path="res://assets/materials/concrete_floor.tres" id="2_floor"]
+[ext_resource type="Material" uid="uid://cmatrust01" path="res://assets/materials/rusty_metal.tres" id="3_rust"]
+[ext_resource type="PackedScene" uid="uid://bia32vkq1a5i" path="res://scenes/player/player.tscn" id="4_player"]
+[ext_resource type="PackedScene" uid="uid://bimo0ijo3l1di" path="res://addons/game_pieces/interactable_door/interactable_door.tscn" id="5_door"]
+[ext_resource type="Script" path="res://scenes/props/note_pickup.gd" id="6_note"]
+[ext_resource type="Script" path="res://scenes/props/door_scene_loader.gd" id="7_loader"]
+[ext_resource type="Script" path="res://scenes/props/battery_pickup.gd" id="8_pickup"]
+[ext_resource type="Resource" uid="uid://bnoteday012" path="res://assets/items/notes/day12.tres" id="9_noteres"]
+[ext_resource type="Resource" uid="uid://bitemkey01" path="res://assets/items/key_rusty.tres" id="10_keyres"]
+[ext_resource type="PackedScene" uid="uid://bp8gamehud001" path="res://scenes/ui/game_hud.tscn" id="11_hud"]
+[ext_resource type="PackedScene" uid="uid://bpinvui001" path="res://scenes/ui/inventory_ui.tscn" id="12_invui"]
+[ext_resource type="PackedScene" uid="uid://bpnoteview001" path="res://scenes/ui/note_viewer_ui.tscn" id="13_noteui"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_floor"]
+size = Vector3(4, 0.2, 6)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_floor"]
+size = Vector3(4, 0.2, 6)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_note"]
+size = Vector3(0.3, 0.05, 0.2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_trigger"]
+size = Vector3(1.5, 2.3, 0.5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_key"]
+size = Vector3(0.15, 0.05, 0.05)
+
+[sub_resource type="Environment" id="Env_storage"]
+background_mode = 1
+ambient_light_source = 2
+ambient_light_color = Color(0.04, 0.04, 0.05, 1)
+ambient_light_energy = 0.25
+tonemap_mode = 2
+fog_enabled = true
+fog_light_color = Color(0.07, 0.07, 0.08, 1)
+fog_density = 0.1
+
+[node name="BunkerStorage" type="Node3D"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Env_storage")
+
+[node name="Floor" type="StaticBody3D" parent="."]
+
+[node name="FloorMesh" type="MeshInstance3D" parent="Floor"]
+mesh = SubResource("BoxMesh_floor")
+surface_material_override/0 = ExtResource("2_floor")
+
+[node name="FloorCollision" type="CollisionShape3D" parent="Floor"]
+shape = SubResource("BoxShape3D_floor")
+
+[node name="Ceiling" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 0)
+
+[node name="CeilingMesh" type="MeshInstance3D" parent="Ceiling"]
+mesh = SubResource("BoxMesh_floor")
+surface_material_override/0 = ExtResource("1_wall")
+
+[node name="CeilingCollision" type="CollisionShape3D" parent="Ceiling"]
+shape = SubResource("BoxShape3D_floor")
+
+[node name="WallN" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.25, -3)
+size = Vector3(4, 2.5, 0.2)
+use_collision = true
+material = ExtResource("1_wall")
+
+[node name="WallS" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.25, 3)
+size = Vector3(4, 2.5, 0.2)
+use_collision = true
+material = ExtResource("1_wall")
+
+[node name="WallE" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 1.25, 0)
+size = Vector3(0.2, 2.5, 6)
+use_collision = true
+material = ExtResource("1_wall")
+
+[node name="WallW" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 1.25, 0)
+size = Vector3(0.2, 2.5, 6)
+use_collision = true
+material = ExtResource("1_wall")
+
+[node name="Shelf1" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 1.0, -2.0)
+size = Vector3(0.8, 2.0, 0.5)
+use_collision = true
+material = ExtResource("3_rust")
+
+[node name="Shelf2" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 1.0, 0)
+size = Vector3(0.8, 2.0, 0.5)
+use_collision = true
+material = ExtResource("3_rust")
+
+[node name="Shelf3" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 1.0, -2.0)
+size = Vector3(0.8, 2.0, 0.5)
+use_collision = true
+material = ExtResource("3_rust")
+
+[node name="Box1" type="CSGBox3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, -1.0)
+size = Vector3(0.5, 0.6, 0.5)
+use_collision = true
+material = ExtResource("3_rust")
+
+[node name="Box2" type="CSGBox3D" parent="."]
+transform = Transform3D(0.93, 0, 0.35, 0, 1, 0, -0.35, 0, 0.93, 0.8, 0.3, -0.8)
+size = Vector3(0.4, 0.5, 0.4)
+use_collision = true
+material = ExtResource("3_rust")
+
+[node name="Barrel1" type="CSGCylinder3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.3, 0.5, 1.8)
+radius = 0.35
+height = 1.0
+material = ExtResource("3_rust")
+
+[node name="Barrel2" type="CSGCylinder3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.6, 0.5, 2.2)
+radius = 0.35
+height = 1.0
+material = ExtResource("3_rust")
+
+[node name="Lamp1" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.3, 1.5)
+light_color = Color(0.95, 0.85, 0.7, 1)
+light_energy = 1.2
+omni_range = 4.0
+
+[node name="Lamp2" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.3, -1.5)
+light_color = Color(0.95, 0.85, 0.7, 1)
+light_energy = 0.9
+omni_range = 3.0
+
+[node name="NotePickup" type="Area3D" parent="Box1" groups=["interactable"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.35, 0)
+script = ExtResource("6_note")
+note = ExtResource("9_noteres")
+paranoia_on_read = 15.0
+
+[node name="NoteCollision" type="CollisionShape3D" parent="Box1/NotePickup"]
+shape = SubResource("BoxShape3D_note")
+
+[node name="KeyPickup" type="Area3D" parent="Box2" groups=["interactable"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, 0)
+script = ExtResource("8_pickup")
+item = ExtResource("10_keyres")
+recharge_amount = 0.0
+
+[node name="KeyCollision" type="CollisionShape3D" parent="Box2/KeyPickup"]
+shape = SubResource("BoxShape3D_key")
+
+[node name="PlayerSpawn" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 2.5)
+
+[node name="Player" parent="." instance=ExtResource("4_player")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 2.5)
+
+[node name="MedicalDoor" parent="." instance=ExtResource("5_door")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 2.9)
+
+[node name="CommandDoor" parent="." instance=ExtResource("5_door")]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 1, -2.9)
+
+[node name="BackToMedical" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.25, 3.4)
+script = ExtResource("7_loader")
+target_scene = "res://scenes/levels/bunker_medical.tscn"
+checkpoint_id = "storage_back"
+
+[node name="BackCollision" type="CollisionShape3D" parent="BackToMedical"]
+shape = SubResource("BoxShape3D_trigger")
+
+[node name="ToCommand" type="Area3D" parent="."]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 1.25, -3.4)
+script = ExtResource("7_loader")
+target_scene = "res://scenes/levels/bunker_command.tscn"
+checkpoint_id = "to_command"
+
+[node name="ToCommandCollision" type="CollisionShape3D" parent="ToCommand"]
+shape = SubResource("BoxShape3D_trigger")
+
+[node name="UI" type="CanvasLayer" parent="."]
+layer = 10
+
+[node name="GameHUD" parent="UI" instance=ExtResource("11_hud")]
+
+[node name="InventoryUI" parent="UI" instance=ExtResource("12_invui")]
+
+[node name="NoteViewer" parent="UI" instance=ExtResource("13_noteui")]

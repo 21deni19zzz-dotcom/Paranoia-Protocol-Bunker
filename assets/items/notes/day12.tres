@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="NoteResource" load_steps=2 format=3 uid="uid://bnoteday012"]
+
+[ext_resource type="Script" path="res://systems/inventory/note_resource.gd" id="1_note"]
+
+[resource]
+script = ExtResource("1_note")
+note_id = "day_12_storage"
+title = "День 12"
+content = "Вещи двигаются, когда я выхожу из комнаты. Коробки в другом порядке.
+Кто-то здесь был. Или это всегда был кто-то другой."
+is_read = false
