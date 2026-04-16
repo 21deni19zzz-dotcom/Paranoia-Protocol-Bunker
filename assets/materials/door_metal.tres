@@ -1,0 +1,7 @@
+[gd_resource type="StandardMaterial3D" format=3 uid="uid://cmatdoor01"]
+
+[resource]
+albedo_color = Color(0.25, 0.22, 0.20, 1)
+metallic = 0.8
+metallic_specular = 0.5
+roughness = 0.4
